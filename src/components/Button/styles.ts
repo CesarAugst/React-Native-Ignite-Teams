@@ -5,7 +5,6 @@ export type ButtonTypeStyleProps = 'PRIMARY' | 'SECONDARY';
 
 type Props = {
     type: ButtonTypeStyleProps;
-    onPress: () => void;
 }
 
 export const Container = styled(TouchableOpacity) <Props>`
