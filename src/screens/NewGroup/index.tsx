@@ -3,8 +3,10 @@ import { Header } from "@components/Header";
 import { Highlight } from "@components/Highlight";
 import { Input } from "@components/Input";
 import { Container, Content, Icon } from "./styles";
+import { useState } from 'react';
 
-export function NewGroups() {
+export function NewGroup() {
+  const [group, setGroup] = useState('');
   return (
     <Container>
       <Header showBackButton />
