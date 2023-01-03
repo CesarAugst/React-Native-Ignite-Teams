@@ -1,4 +1,4 @@
-import { FlatList } from 'react-native';
+import { Alert, FlatList } from 'react-native';
 import { useState } from 'react';
 import { useRoute } from '@react-navigation/native';
 
@@ -12,17 +12,43 @@ import { ListEmpty } from '@components/ListEmpty';
 import { Button } from '@components/Button';
 
 import { Container, Form, HeaderList, NumberOfPlayers } from "./styles";
+import { AppError } from '@utils/AppError';
+import { playerAddByGroup } from '@storage/player/playerAddByGroup';
+import { playersGetByGroup } from '@storage/player/playersGetByGroup';
 
 type RouteParams = {
   group: string;
 }
 
 export function Players() {
+  const [newPlayerName, setNewPlayerName] = useState('');
   const [team, setTeam] = useState('Time A');
   const [players, setPlayers] = useState([]);
 
   const route = useRoute();
   const { group } = route.params as RouteParams;
+
+  async function handleAddPlayer(){
+    if(newPlayerName.trim().length === 0){
+      return Alert.alert("Novo player", 'Informe o nome do player apra adicionar')
+    }
+
+    const newPlayer = {
+      name: newPlayerName,
+      team,
+    }
+
+    try {
+      await playerAddByGroup(newPlayer, group);
+    } catch (error) {
+      if(error instanceof AppError){
+        Alert.alert("Novo player", error.message)
+      }else{
+        console.log(error)
+        Alert.alert("Novo player", 'Nao foi possivel adicionar')
+      }
+    }
+  }
 
   return (
     <Container>
@@ -35,8 +61,12 @@ export function Players() {
         <Input
           placeholder="Nome da pessoa"
           autoCorrect={false}
+          onChangeText={setNewPlayerName}
         />
-        <ButtonIcon icon="add"/>
+        <ButtonIcon 
+          icon="add"
+          onPress={handleAddPlayer}
+        />
       </Form>
       <HeaderList>
         <FlatList 
@@ -71,7 +101,7 @@ export function Players() {
         )}
         ListEmptyComponent={() => (
           <ListEmpty
-            message="Não há pessoas nesse time"
+            message="Nao ha pessoas nesse time"
           />
         )}
       />
